@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p2p-message</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    h2 {
+      color: #666;
+    }
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      overflow-x: auto;
+    }
+    code {
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>p2p-message</h1>
+  <p>A simple and efficient peer-to-peer messaging library for direct browser-to-browser communication.</p>
+
+  <h2>Installation</h2>
+  <p>Install via NPM:</p>
+  <pre><code>npm install p2p-message</code></pre>
+  <p>Or include directly in your HTML:</p>
+  <pre><code>&lt;script src="https://unpkg.com/p2p-message@1.0.0/dist/p2p-message.min.js"&gt;&lt;/script&gt;</code></pre>
+
+  <h2>Usage</h2>
+  <pre><code>
+// Initialize with configuration
+const config = {
+  key: 'unique-network-key',  // All peers using this key will connect
+  trackers: [                 // Tracker servers for peer discovery
+    'wss://tracker.openwebtorrent.com'
+  ],
+  onMessage: (peerId, message) => {
+    console.log(`Message from ${peerId}: ${message}`);
+  },
+  onConnect: (peerId) => {
+    console.log(`New peer connected: ${peerId}`);
+  }
+};
+
+// Create instance and connect
+const p2p = new P2PMessage(config);
+p2p.connect();
+
+// Send message to a specific peer
+p2p.send('peer-id-123', 'Hello, peer!');
+
+// Broadcast implementation
+const peers = new Set();
+
+// Track connected peers
+config.onConnect = (peerId) => {
+  peers.add(peerId);
+  console.log(`New peer connected: ${peerId}`);
+};
+
+// Broadcast to all peers
+function broadcast(message) {
+  peers.forEach(peerId => {
+    p2p.send(peerId, message);
+  });
+}
+
+// Clean up when done
+p2p.disconnect();
+  </code></pre>
+
+  <h2>API Reference</h2>
+
+  <h3>Constructor Options</h3>
+  <ul>
+    <li><code>key</code> (required): String - Unique network identifier. All peers using the same key will automatically connect</li>
+    <li><code>trackers</code> (optional): Array - List of WebSocket tracker URLs for peer discovery. Defaults to public trackers</li>
+    <li><code>onMessage</code> (optional): Function(peerId, message) - Called when receiving messages</li>
+    <li><code>onConnect</code> (optional): Function(peerId) - Called when a new peer connects</li>
+    <li><code>disableShaPrefixing</code> (optional): Boolean - Disables SHA prefixing for the infoHash. Defaults to false</li>
+  </ul>
+
+  <h3>Available Methods</h3>
+  <ul>
+    <li><code>connect()</code> - Connects to the P2P network through configured trackers</li>
+    <li><code>send(peerId, message)</code> - Sends a message to a specific peer</li>
+    <li><code>disconnect()</code> - Disconnects from network and cleans up resources</li>
+    <li><code>disconnectPeer(peerId)</code> - Disconnects a specific peer</li>
+  </ul>
+
+</body>
+</html>
