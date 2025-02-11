@@ -1,8 +1,10 @@
 {
   "name": "p2p-message",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A simple and efficient P2P messaging library for browser-to-browser communication",
-  "main": "dist/p2p-message.min.js",
+  "main": "dist/messaging.min.js",
+  "unpkg": "dist/messaging.min.js",
+  "jsdelivr": "dist/messaging.min.js",
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch",

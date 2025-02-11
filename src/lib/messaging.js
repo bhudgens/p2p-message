@@ -1,8 +1,27 @@
+/**
+ * @fileoverview Main P2P messaging client implementation
+ * @module MessageClient
+ */
+
 import WebTorrent from "webtorrent";
 import CryptoJS from "crypto-js";
 import { MessageExtension } from "./extension";
 
+/* eslint-disable lines-around-comment */
+/**
+ * MessageClient handles P2P communication between browsers
+ * @class
+ */
 class MessageClient {
+  /**
+   * Creates a new MessageClient instance
+   * @param {Object} config - Configuration object
+   * @param {string} config.token - Unique network identifier for peer discovery
+   * @param {string[]} [config.trackers=["wss://tracker.openwebtorrent.com"]] - WebTorrent tracker URLs
+   * @param {Function} [config.onMessage] - Callback for incoming messages
+   * @param {Function} [config.onConnect] - Callback for new peer connections
+   * @param {boolean} [config.disableShaPrefixing=false] - Disable SHA prefixing for infoHash
+   */
   constructor(config) {
     this.client = null;
     this.torrent = null;
@@ -16,24 +35,48 @@ class MessageClient {
     };
   }
 
+  /**
+   * Logs debug messages
+   * @private
+   * @param {string} msg - Debug message
+   */
   logDebug(msg) {
     console.log(`[Debug] ${msg}`);
   }
 
+  /**
+   * Logs wire-related messages
+   * @private
+   * @param {string} msg - Wire message
+   */
   logWire(msg) {
     console.log(`[Wire] ${msg}`);
   }
 
+  /**
+   * Logs messaging-related messages
+   * @private
+   * @param {string} msg - Message content
+   */
   logMessage(msg) {
     console.log(`[Message] ${msg}`);
   }
 
+  /**
+   * Updates and logs the current peer count
+   * @private
+   */
   updatePeerCount() {
     const count = this.torrent ? this.torrent.numPeers : 0;
     console.log(`Connected Peers: ${count}`);
     this.logDebug(`Current peer count: ${count}`);
   }
 
+  /**
+   * Attaches message extension to a wire connection
+   * @private
+   * @param {Object} wire - WebTorrent wire object
+   */
   attachMessageExtension(wire) {
     if (!this.messageExtensions.has(wire.peerId)) {
       wire.use(MessageExtension);
@@ -65,6 +108,11 @@ class MessageClient {
     }
   }
 
+  /**
+   * Sends a message to a specific peer
+   * @param {string} peerId - Target peer ID
+   * @param {string} text - Message content
+   */
   send(peerId, text) {
     if (!this.torrent) {
       console.log("Not connected to network");
@@ -80,6 +128,10 @@ class MessageClient {
     }
   }
 
+  /**
+   * Connects to the P2P network
+   * @returns {void}
+   */
   connect() {
     if (!this.config.token) {
       console.log("Please provide a key in the config");
@@ -115,6 +167,10 @@ class MessageClient {
     }
   }
 
+  /**
+   * Sets up torrent-related event handlers
+   * @private
+   */
   setupTorrentEvents() {
     this.torrent.on("wire", (wire) => {
       this.logWire(`New peer connected: ${wire.peerId}`);
@@ -135,6 +191,9 @@ class MessageClient {
     setInterval(() => this.updatePeerCount(), 2000);
   }
 
+  /**
+   * Disconnects from the P2P network and cleans up resources
+   */
   disconnect() {
     if (this.torrent) {
       this.torrent.destroy();
@@ -148,6 +207,10 @@ class MessageClient {
     console.log("Disconnected from P2P network");
   }
 
+  /**
+   * Disconnects from a specific peer
+   * @param {string} peerId - ID of the peer to disconnect
+   */
   disconnectPeer(peerId) {
     if (!this.torrent) {
       console.log("Not connected to network");
