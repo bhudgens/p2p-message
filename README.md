@@ -17,11 +17,15 @@ A simple and efficient peer-to-peer messaging library for direct browser-to-brow
 npm install p2p-message
 ```
 
-Or include directly in your HTML:
+Or include directly in your HTML from CDN:
 
 ```html
-<script src="https://unpkg.com/p2p-message@1.0.0/dist/p2p-message.min.js"></script>
+<script src="https://unpkg.com/p2p-message@1.0.3/dist/messaging.min.js"></script>
 ```
+
+## Try it Live
+
+Check out our [Live Demo](https://bhudgens.github.io/p2p-message/example.html) to see p2p-message in action! Open the demo in multiple browser windows to test peer-to-peer messaging.
 
 ## Usage
 
