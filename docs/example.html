@@ -229,14 +229,22 @@
         const urlParams = new URLSearchParams(window.location.search);
         const sharedKeyFromUrl = urlParams.get('token');
         const sharedKeyInput = document.getElementById('sharedKey');
+        const refreshKeyBtn = document.getElementById('refreshKeyBtn');
 
         // If token exists in URL, use it
         if (sharedKeyFromUrl) {
             sharedKeyInput.value = sharedKeyFromUrl;
             sharedKeyInput.classList.add('is-valid');
+            // Disable token generation when token is in URL
+            sharedKeyInput.disabled = true;
+            refreshKeyBtn.disabled = true;
+            refreshKeyBtn.classList.add('disabled');
+            // Automatically connect when token is in URL
+            setTimeout(() => {
+                connectBtn.click();
+            }, 100);
         }
 
-        const refreshKeyBtn = document.getElementById('refreshKeyBtn');
         const connectionSuccess = document.getElementById('connectionSuccess');
 
         function generateSharedKey(length) {
@@ -275,6 +283,9 @@
         // Refresh key button handler
         refreshKeyBtn.addEventListener('click', () => {
             updateSharedTokenInput(generateSharedKey(10));
+            // After successful token generation, redirect with token param
+            const newUrl = `${window.location.href.split('?')[0]}?token=${sharedKeyInput.value}`;
+            window.location.href = newUrl;
         });
 
         let peers = [];
@@ -370,6 +381,7 @@
             updatePeerList();
             peerCountDisplay.textContent = `Connected Peers: ${peers.length}`;
             log('Disconnected from P2P network');
+            connectBtn.textContent = 'Connect';
             connectBtn.style.display = 'inline-block';
             disconnectNetworkBtn.style.display = 'none';
             statusDisplay.textContent = '';
